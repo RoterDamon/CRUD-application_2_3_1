@@ -13,48 +13,52 @@ import web.service.UserService;
 import web.model.User;
 
 @Controller
-
+@RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @GetMapping("/users")
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/list")
     public String listCustomers(Model theModel) {
         List<User> users = userService.getUsers();
         theModel.addAttribute("users", users);
         return "user_form";
     }
 
-    @RequestMapping("/new")
+    @GetMapping("/new")
     public String showFormForAdd(Model theModel) {
         User user = new User();
         theModel.addAttribute("user", user);
         return "new_user";
     }
 
-    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @PostMapping(value = "/save")
     public String saveUser(@ModelAttribute("user") User user) {
-        if (Objects.isNull(user.getId())) {
+        if (Objects.isNull(user.getUserId())) {
             userService.saveUser(user);
         } else {
             userService.updateUser(user);
         }
-        return "redirect:/users";
+        return "redirect:/users/list";
     }
 
-    @RequestMapping("/edit")
-    public ModelAndView editCustomerForm(@RequestParam(value = "id") Long id) {
+    @GetMapping("/edit/{id}")
+    public ModelAndView editCustomerForm(@PathVariable Long id) {
         ModelAndView mav = new ModelAndView("edit_user");
         User user = userService.getUser(id);
         mav.addObject("user", user);
         return mav;
     }
 
-    @GetMapping("/delete")
-    public String deleteCustomer(@RequestParam(value = "id") Long id) {
+    @GetMapping("/delete/{id}")
+    public String deleteCustomer(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return "redirect:/users";
+        return "redirect:/users/list";
     }
 }
 
