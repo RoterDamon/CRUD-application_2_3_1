@@ -39,16 +39,18 @@ public class UserController {
 
     @PostMapping(value = "/save")
     public String saveUser(@ModelAttribute("user") User user) {
-        if (Objects.isNull(user.getUserId())) {
-            userService.saveUser(user);
-        } else {
-            userService.updateUser(user);
-        }
+        userService.saveUser(user);
+        return "redirect:/users/list";
+    }
+
+    @PostMapping(value = "/update")
+    public String updateUser(@ModelAttribute("user") User user) {
+        userService.updateUser(user);
         return "redirect:/users/list";
     }
 
     @GetMapping("/edit/{id}")
-    public ModelAndView editCustomerForm(@PathVariable Long id) {
+    public ModelAndView editCustomerForm(@PathVariable("id") Long id) {
         ModelAndView mav = new ModelAndView("edit_user");
         User user = userService.getUser(id);
         mav.addObject("user", user);
