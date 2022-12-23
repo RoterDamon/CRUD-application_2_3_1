@@ -43,6 +43,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new NullPointerException("User not found");
+        }
         userDao.deleteUser(id);
     }
 }
